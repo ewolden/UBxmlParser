@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import sys, os
@@ -69,7 +69,7 @@ for record in finished_records:
 print("+ Ferdig med etterprossesring\n")
 
 print("- Skriver til fil: " + filename + "_output.csv")
-with open(filename + "_output.csv", "w") as of:
+with open(filename + "_output.csv", "w", encoding="utf-8") as of:
   of.write(";".join(headers) + "\n")
   for line in afterprocessed:
     of.write(line)
