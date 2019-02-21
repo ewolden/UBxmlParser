@@ -4,6 +4,39 @@
 import sys, os
 import xml.etree.ElementTree
 
+import time
+import threading
+
+class Spinner:
+  #Credit to Victor Moyseenko - https://stackoverflow.com/a/39504463/8376046
+    busy = False
+    delay = 0.2
+
+    @staticmethod
+    def spinning_cursor():
+        while 1: 
+            for cursor in '|/-\\': yield cursor
+
+    def __init__(self, delay=None):
+        self.spinner_generator = self.spinning_cursor()
+        if delay and float(delay): self.delay = delay
+
+    def spinner_task(self):
+        while self.busy:
+            sys.stdout.write(next(self.spinner_generator))
+            sys.stdout.flush()
+            time.sleep(self.delay)
+            sys.stdout.write('\b')
+            sys.stdout.flush()
+
+    def start(self):
+        self.busy = True
+        threading.Thread(target=self.spinner_task).start()
+
+    def stop(self):
+        self.busy = False
+        time.sleep(self.delay)
+
 if len(sys.argv) != 2:
   print("\nMangler inputfil")
   print("Kjør scriptet slik:\n")
@@ -15,7 +48,15 @@ filename = os.path.splitext(os.path.abspath(inputfile))[0]
 print(filename)
 
 print("- Leser XML fil")
-root = xml.etree.ElementTree.parse(inputfile).getroot()
+spinner = Spinner()
+spinner.start()
+try:
+  root = xml.etree.ElementTree.parse(inputfile).getroot()
+  spinner.stop()
+except KeyboardInterrupt:
+  spinner.stop()
+except Exception as e:
+  spinner.stop()
 print("+ XML fil lest inn til minne\n")
 
 count = 0
@@ -52,25 +93,33 @@ print("+ Relevant data hentet til nytt objekt\n")
 
 
 print("- Etterprosseserer")
-afterprocessed = []
-for record in finished_records:
-  tmp_record = ""
-  for index, subrecord in enumerate(record):
-    tmp_subrecord = ""
-    if subrecord != [] and len(subrecord) > 1:
-      tmp_subrecord = ("§").join(subrecord)
-    elif subrecord != []:
-      tmp_subrecord = subrecord[0]
-    if tmp_record != "":
-    	tmp_record = tmp_record + ";" + tmp_subrecord
-    else:
-    	tmp_record = tmp_subrecord
-  afterprocessed.append(tmp_record + "\n")
+spinner.start()
+try:
+
+  afterprocessed = []
+  for record in finished_records:
+    tmp_record = ""
+    for index, subrecord in enumerate(record):
+      tmp_subrecord = ""
+      if subrecord != [] and len(subrecord) > 1:
+        tmp_subrecord = ("§").join(subrecord)
+      elif subrecord != []:
+        tmp_subrecord = subrecord[0]
+      if tmp_record != "":
+      	tmp_record = tmp_record + "|" + tmp_subrecord
+      else:
+      	tmp_record = tmp_subrecord
+    afterprocessed.append(tmp_record + "\n")
+  spinner.stop()
+except KeyboardInterrupt:
+  spinner.stop()
+except Exception as e:
+  spinner.stop()
 print("+ Ferdig med etterprossesring\n")
 
 print("- Skriver til fil: " + filename + "_output.csv")
 with open(filename + "_output.csv", "w", encoding="utf-8") as of:
-  of.write(";".join(headers) + "\n")
+  of.write("|".join(headers) + "\n")
   for line in afterprocessed:
     of.write(line)
 print("+ " +  str(len(afterprocessed)) + " linjer skrevet")
