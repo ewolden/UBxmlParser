@@ -7,6 +7,8 @@ import xml.etree.ElementTree
 import time
 import threading
 
+OUTPUT_SEPARATOR = '€'
+
 class Spinner:
   #Credit to Victor Moyseenko - https://stackoverflow.com/a/39504463/8376046
     busy = False
@@ -106,7 +108,7 @@ try:
       elif subrecord != []:
         tmp_subrecord = subrecord[0]
       if tmp_record != "":
-      	tmp_record = tmp_record + "|" + tmp_subrecord
+      	tmp_record = tmp_record + OUTPUT_SEPARATOR + tmp_subrecord
       else:
       	tmp_record = tmp_subrecord
     afterprocessed.append(tmp_record + "\n")
@@ -119,7 +121,7 @@ print("+ Ferdig med etterprossesring\n")
 
 print("- Skriver til fil: " + filename + "_output.csv")
 with open(filename + "_output.csv", "w", encoding="utf-8") as of:
-  of.write("|".join(headers) + "\n")
+  of.write(OUTPUT_SEPARATOR.join(headers) + "\n")
   for line in afterprocessed:
     of.write(line)
 print("+ " +  str(len(afterprocessed)) + " linjer skrevet")
