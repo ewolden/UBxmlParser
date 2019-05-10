@@ -53,12 +53,14 @@ print("- Leser XML fil")
 spinner = Spinner()
 spinner.start()
 try:
-  root = xml.etree.ElementTree.parse(inputfile).getroot()
+  parser = xml.etree.ElementTree.XMLParser(encoding='utf-8')
+  root = xml.etree.ElementTree.parse(inputfile, parser).getroot()
   spinner.stop()
 except KeyboardInterrupt:
   spinner.stop()
 except Exception as e:
   spinner.stop()
+  print('Feil: ', e)
 print("+ XML fil lest inn til minne\n")
 
 count = 0
