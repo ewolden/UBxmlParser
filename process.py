@@ -8,6 +8,7 @@ import time
 import threading
 
 OUTPUT_SEPARATOR = '€'
+VERSION = '0.04'
 
 class Spinner:
   #Credit to Victor Moyseenko - https://stackoverflow.com/a/39504463/8376046
@@ -44,6 +45,8 @@ if len(sys.argv) != 2:
   print("Kjør scriptet slik:\n")
   print("python process.py inputfil\n\n")
   sys.exit()
+
+print('XML decoder v.', VERSION)
 
 inputfile = sys.argv[1]
 filename = os.path.splitext(os.path.abspath(inputfile))[0]
