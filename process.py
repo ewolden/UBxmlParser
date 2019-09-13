@@ -8,7 +8,7 @@ import time
 import threading
 
 OUTPUT_SEPARATOR = '€'
-VERSION = '0.04'
+VERSION = '0.05'
 
 class Spinner:
   #Credit to Victor Moyseenko - https://stackoverflow.com/a/39504463/8376046
@@ -79,18 +79,18 @@ for record in root:
   for controlfield in record.iter("controlfield"):
     processed_record["parent_name"] = controlfield.get("tag")
     if str(controlfield.get("tag")) in headers:
-      processed_record["contents"][headers.index(str(controlfield.get("tag")))].append(str(controlfield.text))
+      processed_record["contents"][headers.index(controlfield.get("tag").encode('utf-8'))].append(controlfield.text.encode('utf-8'))
     else:
-      headers.append(str(controlfield.get("tag")))
-      processed_record["contents"].append([str(controlfield.text)])
+      headers.append(controlfield.get("tag").encode('utf-8'))
+      processed_record["contents"].append([controlfield.text.encode('utf-8')])
   for datafield in record.iter("datafield"):
     processed_record["parent_name"] = datafield.get("tag")
     for subfield in datafield:
       if str(processed_record["parent_name"] + "_" + subfield.get("code")) in headers:
-        processed_record["contents"][headers.index(str(processed_record["parent_name"] + "_" + subfield.get("code")))].append(str(subfield.text))
+        processed_record["contents"][headers.index((processed_record["parent_name"] + "_" + subfield.get("code")).encode('utf-8'))].append(subfield.text.encode('utf-8'))
       else:
-        headers.append(str(processed_record["parent_name"] + "_" + subfield.get("code")))
-        processed_record["contents"].append([str(subfield.text)])
+        headers.append((processed_record["parent_name"] + "_" + subfield.get("code")).encode('utf-8'))
+        processed_record["contents"].append([subfield.text.encode('utf-8')])
 
   count = count + 1
   finished_records.append(processed_record["contents"])
